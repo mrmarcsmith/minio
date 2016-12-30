@@ -22,6 +22,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strings"
+	"fmt"
 )
 
 // Validates location constraint in PutBucket request body.
@@ -34,6 +35,7 @@ func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
 	// be created at default region.
 	locationConstraint := createBucketLocationConfiguration{}
 	err := xmlDecoder(r.Body, &locationConstraint, r.ContentLength)
+	
 	if err == nil || err == io.EOF {
 		// Successfully decoded, proceed to verify the region.
 		// Once region has been obtained we proceed to verify it.
@@ -46,6 +48,10 @@ func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
 		// Return errInvalidRegion if location constraint does not match
 		// with configured region.
 		s3Error = ErrNone
+		fmt.Printf("these are the regions")
+		fmt.Printf(serverRegion)
+		fmt.Printf(incomingRegion)
+		
 		if serverRegion != incomingRegion {
 			s3Error = ErrInvalidRegion
 		}
@@ -53,6 +59,8 @@ func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
 	}
 	errorIf(err, "Unable to xml decode location constraint")
 	// Treat all other failures as XML parsing errors.
+	fmt.Printf("We are at the bottom")
+	
 	return ErrMalformedXML
 }
 
