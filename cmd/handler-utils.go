@@ -29,7 +29,7 @@ import (
 // The location value in the request body should match the
 // region configured at serverConfig, otherwise error is returned.
 func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
-	fmt.printf("Running is Valid")
+	fmt.Printf("Running is Valid")
 	
 	serverRegion := serverConfig.GetRegion()
 	// If the request has no body with content-length set to 0,
@@ -37,9 +37,9 @@ func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
 	// be created at default region.
 	locationConstraint := createBucketLocationConfiguration{}
 	err := xmlDecoder(r.Body, &locationConstraint, r.ContentLength)
-	fmt.printf("after decoder");
-	fmt.printf(err)
-	fmt.printf(locationConstraint)
+	fmt.Printf("after decoder");
+	fmt.Printf(err)
+	fmt.Printf(locationConstraint)
 	if err == nil || err == io.EOF {
 		// Successfully decoded, proceed to verify the region.
 		// Once region has been obtained we proceed to verify it.
@@ -52,9 +52,9 @@ func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
 		// Return errInvalidRegion if location constraint does not match
 		// with configured region.
 		s3Error = ErrNone
-		fmt.printf("these are the regions")
-		fmt.printf(serverRegion)
-		fmt.printf(incomingRegion)
+		fmt.Printf("these are the regions")
+		fmt.Printf(serverRegion)
+		fmt.Printf(incomingRegion)
 		
 		if serverRegion != incomingRegion {
 			s3Error = ErrInvalidRegion
@@ -63,7 +63,7 @@ func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
 	}
 	errorIf(err, "Unable to xml decode location constraint")
 	// Treat all other failures as XML parsing errors.
-	fmt.printf("We are at the bottom")
+	fmt.Printf("We are at the bottom")
 	
 	return ErrMalformedXML
 }
