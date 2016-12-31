@@ -36,9 +36,9 @@ func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
 	// we do not have to validate location constraint. Bucket will
 	// be created at default region.
 	locationConstraint := createBucketLocationConfiguration{}
-	console.Println("%+v\n before location",string(locationConstraint));
+	console.Println("%+v\n before location",locationConstraint);
 	err := xmlDecoder(r.Body, &locationConstraint, r.ContentLength)
-	console.Println("%+v\nBody: ",string(r.Body));
+	console.Println("%+v\nBody: ",r.Body);
 	
 	
 	out, err := json.Marshal(r)
@@ -47,7 +47,7 @@ func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
     }
 	console.Println("%+v\nrall: ",string(out));
 	console.Println("%+v\ncontent length: ",r.ContentLength);
-	console.Println("%+v\nr: ",string(r));
+	console.Println("%+v\nr: ",r);
 	console.Println("after decoder");
 	
 	if err == nil || err == io.EOF {
