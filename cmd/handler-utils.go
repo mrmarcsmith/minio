@@ -30,7 +30,7 @@ import (
 // region configured at serverConfig, otherwise error is returned.
 func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
 	console.Println("Running is Valid")
-	
+	return ErrNone
 	serverRegion := serverConfig.GetRegion()
 	// If the request has no body with content-length set to 0,
 	// we do not have to validate location constraint. Bucket will
