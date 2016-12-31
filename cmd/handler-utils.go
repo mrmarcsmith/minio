@@ -39,8 +39,14 @@ func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
 	console.Println("%+v\n before location",string(locationConstraint));
 	err := xmlDecoder(r.Body, &locationConstraint, r.ContentLength)
 	console.Println("%+v\nBody: ",string(r.Body));
-	console.Println("%+v\nafterCon: ",string(locationConstraint));
-	console.Println("%+v\ncontent length: ",string(r.ContentLength));
+	
+	
+	out, err := json.Marshal(r)
+    if err != nil {
+        panic (err)
+    }
+	console.Println("%+v\nrall: ",string(out));
+	console.Println("%+v\ncontent length: ",r.ContentLength);
 	console.Println("%+v\nr: ",string(r));
 	console.Println("after decoder");
 	
