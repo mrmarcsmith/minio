@@ -23,7 +23,6 @@ import (
 	"net/http"
 	"strings"
 	"github.com/minio/mc/pkg/console"
-	"encoding/json"
 )
 
 // Validates location constraint in PutBucket request body.
