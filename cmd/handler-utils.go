@@ -22,14 +22,14 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strings"
-	"fmt"
+	"log"
 )
 
 // Validates location constraint in PutBucket request body.
 // The location value in the request body should match the
 // region configured at serverConfig, otherwise error is returned.
 func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
-	fmt.Printf("Running is Valid")
+	log.Printf("Running is Valid")
 	
 	serverRegion := serverConfig.GetRegion()
 	// If the request has no body with content-length set to 0,
@@ -37,7 +37,7 @@ func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
 	// be created at default region.
 	locationConstraint := createBucketLocationConfiguration{}
 	err := xmlDecoder(r.Body, &locationConstraint, r.ContentLength)
-	fmt.Printf("after decoder");
+	log.Printf("after decoder");
 	if err == nil || err == io.EOF {
 		// Successfully decoded, proceed to verify the region.
 		// Once region has been obtained we proceed to verify it.
@@ -50,10 +50,10 @@ func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
 		// Return errInvalidRegion if location constraint does not match
 		// with configured region.
 		s3Error = ErrNone
-		fmt.Printf("these are the regions noe server")
-		fmt.Printf(serverRegion)
-		fmt.Printf("now incoming")
-		fmt.Printf(incomingRegion)
+		log.Printf("these are the regions noe server")
+		log.Printf(serverRegion)
+		log.Printf("now incoming")
+		log.Printf(incomingRegion)
 		
 		if serverRegion != incomingRegion {
 			s3Error = ErrInvalidRegion
@@ -62,7 +62,7 @@ func isValidLocationConstraint(r *http.Request) (s3Error APIErrorCode) {
 	}
 	errorIf(err, "Unable to xml decode location constraint")
 	// Treat all other failures as XML parsing errors.
-	fmt.Printf("We are at the bottom")
+	log.Printf("We are at the bottom")
 	
 	return ErrMalformedXML
 }
