@@ -37,6 +37,7 @@ import (
 // Enforces bucket policies for a bucket for a given tatusaction.
 func enforceBucketPolicy(bucket string, action string, reqURL *url.URL) (s3Error APIErrorCode) {
 	// Verify if bucket actually exists
+	console.Println("in enforce bucket policy")
 	if err := checkBucketExist(bucket, newObjectLayerFn()); err != nil {
 		err = errorCause(err)
 		switch err.(type) {
@@ -326,31 +327,31 @@ func debugHTML(data []byte, err error) {
 // ----------
 // This implementation of the PUT operation creates a new bucket for authenticated request
 func (api objectAPIHandlers) PutBucketHandler(w http.ResponseWriter, r *http.Request) {
+	console.Println("in PutBucketHandler")
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
 		writeErrorResponse(w, r, ErrServerNotInitialized, r.URL.Path)
 		return
 	}
-
+console.Println("past object api")
 	// PutBucket does not have any bucket action.
 	if s3Error := checkRequestAuthType(r, "", "", "us-east-1"); s3Error != ErrNone {
+		console.Println("checkRequestAuthType failed")
 		writeErrorResponse(w, r, s3Error, r.URL.Path)
 		return
 	}
-
+console.Println("checkRequestAuthType pass")
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
 
-	console.Println("second")
-	debugHTML(httputil.DumpRequestOut(r, true))
-	console.Println("third")
 	// Validate if incoming location constraint is valid, reject
 	// requests which do not follow valid region requirements.
 	if s3Error := isValidLocationConstraint(r); s3Error != ErrNone {
+		console.Println("isValidLocationConstraint failed")
 		writeErrorResponse(w, r, s3Error, r.URL.Path)
 		return
 	}
-
+console.Println("isValidLocationConstraint pass")
 	bucketLock := globalNSMutex.NewNSLock(bucket, "")
 	bucketLock.Lock()
 	defer bucketLock.Unlock()
@@ -358,10 +359,12 @@ func (api objectAPIHandlers) PutBucketHandler(w http.ResponseWriter, r *http.Req
 	// Proceed to creating a bucket.
 	err := objectAPI.MakeBucket(bucket)
 	if err != nil {
+		console.Println("Unable to create a bucket failed")
 		errorIf(err, "Unable to create a bucket.")
 		writeErrorResponse(w, r, toAPIErrorCode(err), r.URL.Path)
 		return
 	}
+	console.Println("MakeBucket pass")
 	// Make sure to add Location information here only for bucket
 	w.Header().Set("Location", getLocation(r))
 	writeSuccessResponse(w, nil)
