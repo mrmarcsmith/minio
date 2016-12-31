@@ -25,6 +25,9 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	
+	"net/http/httputil"
+	"github.com/minio/mc/pkg/console"
 
 	mux "github.com/gorilla/mux"
 	"github.com/minio/minio-go/pkg/set"
@@ -328,6 +331,10 @@ func (api objectAPIHandlers) PutBucketHandler(w http.ResponseWriter, r *http.Req
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
 
+	console.Println(httputil.DumpRequestOut(r, true))
+	console.Println("second")
+	debug(httputil.DumpRequestOut(r, true))
+	console.Println("third")
 	// Validate if incoming location constraint is valid, reject
 	// requests which do not follow valid region requirements.
 	if s3Error := isValidLocationConstraint(r); s3Error != ErrNone {
