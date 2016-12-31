@@ -22,6 +22,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strings"
+	"github.com/minio/mc/pkg/console"
 )
 
 // Validates location constraint in PutBucket request body.
