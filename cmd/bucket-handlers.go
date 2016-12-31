@@ -26,7 +26,6 @@ import (
 	"strings"
 	"sync"
 	
-	"net/http/httputil"
 	"github.com/minio/mc/pkg/console"
 
 	mux "github.com/gorilla/mux"
