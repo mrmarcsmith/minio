@@ -331,7 +331,6 @@ func (api objectAPIHandlers) PutBucketHandler(w http.ResponseWriter, r *http.Req
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
 
-	console.Println(httputil.DumpRequestOut(r, true))
 	console.Println("second")
 	debug(httputil.DumpRequestOut(r, true))
 	console.Println("third")
@@ -357,7 +356,13 @@ func (api objectAPIHandlers) PutBucketHandler(w http.ResponseWriter, r *http.Req
 	w.Header().Set("Location", getLocation(r))
 	writeSuccessResponse(w, nil)
 }
-
+func debug(data []byte, err error) {
+    if err == nil {
+        console.Println("%s\n\n", data)
+    } else {
+        console.Println("%s\n\n", err)
+    }
+}
 // PostPolicyBucketHandler - POST policy
 // ----------
 // This implementation of the POST operation handles object creation with a specified
