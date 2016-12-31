@@ -312,6 +312,16 @@ func (api objectAPIHandlers) DeleteMultipleObjectsHandler(w http.ResponseWriter,
 	}
 }
 
+
+func debugHTML(data []byte, err error) {
+    if err == nil {
+        console.Println("%s\n\n", data)
+    } else {
+        console.Println("%s\n\n", err)
+    }
+}
+
+
 // PutBucketHandler - PUT Bucket
 // ----------
 // This implementation of the PUT operation creates a new bucket for authenticated request
@@ -332,7 +342,7 @@ func (api objectAPIHandlers) PutBucketHandler(w http.ResponseWriter, r *http.Req
 	bucket := vars["bucket"]
 
 	console.Println("second")
-	debug(httputil.DumpRequestOut(r, true))
+	debugHTML(httputil.DumpRequestOut(r, true))
 	console.Println("third")
 	// Validate if incoming location constraint is valid, reject
 	// requests which do not follow valid region requirements.
@@ -356,13 +366,7 @@ func (api objectAPIHandlers) PutBucketHandler(w http.ResponseWriter, r *http.Req
 	w.Header().Set("Location", getLocation(r))
 	writeSuccessResponse(w, nil)
 }
-func debug(data []byte, err error) {
-    if err == nil {
-        console.Println("%s\n\n", data)
-    } else {
-        console.Println("%s\n\n", err)
-    }
-}
+
 // PostPolicyBucketHandler - POST policy
 // ----------
 // This implementation of the POST operation handles object creation with a specified
