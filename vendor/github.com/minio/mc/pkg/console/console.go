@@ -30,7 +30,7 @@ import (
 
 var (
 	// DebugPrint enables/disables console debug printing.
-	DebugPrint = false
+	DebugPrint = true
 
 	// Used by the caller to print multiple lines atomically. Exposed by Lock/Unlock methods.
 	publicMutex = &sync.Mutex{}
