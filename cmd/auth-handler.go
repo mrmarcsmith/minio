@@ -21,6 +21,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	
+	//Marc added for logging
+	"github.com/minio/mc/pkg/console"
 )
 
 // Verify if the request http Header "x-amz-content-sha256" == "UNSIGNED-PAYLOAD"
@@ -217,6 +220,8 @@ func isSupportedS3AuthType(aType authType) bool {
 
 // handler for validating incoming authorization headers.
 func (a authHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	console.Println("in ServeHTTP")
+	console.Println(r.URL)
 	aType := getRequestAuthType(r)
 	if isSupportedS3AuthType(aType) {
 		// Let top level caller validate for anonymous and known signed requests.
