@@ -26,7 +26,10 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-
+        
+	//added by Marc for logging
+	"github.com/minio/mc/pkg/console"
+	
 	mux "github.com/gorilla/mux"
 )
 
@@ -58,8 +61,11 @@ func errAllowableObjectNotFound(bucket string, r *http.Request) APIErrorCode {
 		//we care about the bucket as a whole, not a particular resource
 		url := *r.URL
 		url.Path = "/" + bucket
-
+		console.Println("here is the path")
+		console.Println(url.Path)
+		
 		if s3Error := enforceBucketPolicy(bucket, "s3:ListBucket", &url); s3Error != ErrNone {
+			console.Println("enforceBucketPolicy Failed 1")
 			return ErrAccessDenied
 		}
 	}
@@ -374,18 +380,19 @@ func (api objectAPIHandlers) CopyObjectHandler(w http.ResponseWriter, r *http.Re
 // ----------
 // This implementation of the PUT operation adds an object to a bucket.
 func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Request) {
+	console.Println("in PutObjectHandler")
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
 		writeErrorResponse(w, r, ErrServerNotInitialized, r.URL.Path)
 		return
 	}
-
+	console.Println("after objectAPI check")
 	// X-Amz-Copy-Source shouldn't be set for this call.
 	if _, ok := r.Header["X-Amz-Copy-Source"]; ok {
 		writeErrorResponse(w, r, ErrInvalidCopySource, r.URL.Path)
 		return
 	}
-
+	console.Println("after X-Amz-Copy-Source check")
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
 	object := vars["object"]
@@ -397,7 +404,7 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 		writeErrorResponse(w, r, ErrInvalidDigest, r.URL.Path)
 		return
 	}
-
+	console.Println("after checkValidMD5 check")
 	/// if Content-Length is unknown/missing, deny the request
 	size := r.ContentLength
 	rAuthType := getRequestAuthType(r)
@@ -410,17 +417,19 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 			return
 		}
 	}
+	
+	console.Println("after authTypeStreamingSigned check")
 	if size == -1 && !contains(r.TransferEncoding, "chunked") {
 		writeErrorResponse(w, r, ErrMissingContentLength, r.URL.Path)
 		return
 	}
-
+	console.Println("after chunked check")
 	/// maximum Upload size for objects in a single operation
 	if isMaxObjectSize(size) {
 		writeErrorResponse(w, r, ErrEntityTooLarge, r.URL.Path)
 		return
 	}
-
+	console.Println("after isMaxObjectSize check")
 	// Extract metadata to be saved from incoming HTTP header.
 	metadata := extractMetadataFromHeader(r.Header)
 	// Make sure we hex encode md5sum here.
@@ -442,6 +451,7 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 	case authTypeAnonymous:
 		// http://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html
 		if s3Error := enforceBucketPolicy(bucket, "s3:PutObject", r.URL); s3Error != ErrNone {
+			console.Println("enforceBucketPolicy Failed 2")
 			writeErrorResponse(w, r, s3Error, r.URL.Path)
 			return
 		}
@@ -483,7 +493,7 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 	}
 	w.Header().Set("ETag", "\""+objInfo.MD5Sum+"\"")
 	writeSuccessResponse(w, nil)
-
+	console.Println("after writeSuccessResponse")
 	// Notify object created event.
 	eventNotify(eventData{
 		Type:    ObjectCreatedPut,
