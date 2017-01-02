@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	// "fmt"
+	
+	"github.com/minio/mc/pkg/console"
 )
 
 // Claims type that uses the map[string]interface{} for JSON decoding
@@ -20,6 +22,11 @@ func (m MapClaims) VerifyAudience(cmp string, req bool) bool {
 // Compares the exp claim against cmp.
 // If required is false, this method will return true if the value matches or is unset
 func (m MapClaims) VerifyExpiresAt(cmp int64, req bool) bool {
+	console.Println("token expires on ")
+	console.Println(m["exp"]);
+	console.Println("is Type:")
+	console.Println(m["exp"].(type))
+	
 	switch exp := m["exp"].(type) {
 	case float64:
 		return verifyExp(int64(exp), cmp, req)
